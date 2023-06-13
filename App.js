@@ -5,32 +5,41 @@ import { Button, StyleSheet, Text, View } from 'react-native';
 export default function App() {
   const [isRunning, setIsRunning] = useState(false);
   const [countdown, setCountdown] = useState();
-
-  function mondayEvent() {
-    const date = new Date();
-    date.setDate(date.getDate() + ((1 + 7 - date.getDay()) % 7 || 7));
-    date.setHours(17, 0, 0); // 5:00PM
-
-    return date;
-  }
-
-  function thursdayEvent() {
-    const date = new Date();
-    date.setDate(date.getDate() + ((1 + 7 - date.getDay()) % 7 || 7));
-    date.setHours(2, 37, 0); // 2:37AM
-
-    return date;
-  }
-
-  function SaturdayEvent() {
-    const date = new Date();
-    date.setDate(date.getDate() + ((1 + 7 - date.getDay()) % 7 || 7));
-    date.setHours(14, 54, 0); // 2:54PM
-
-    return date;
-  }
-
+  const [event, setEvent] = useState();
   const timeoutInterval = useRef(null);
+
+  function getEvent(dayNumber, hoursNumber, minutesNumber) {
+    const now = new Date();
+    const currentDay = now.getDay();
+    const currentHour = now.getHours();
+    const currentMinutes = now.getMinutes();
+
+    if (
+      currentDay === dayNumber &&
+      (currentHour < hoursNumber ||
+        (currentHour === hoursNumber && currentMinutes < minutesNumber))
+    ) {
+      return new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        hoursNumber,
+        minutesNumber,
+        0
+      ).getTime();
+    } else {
+      const daysUntilThursday = (7 - currentDay + dayNumber) % 7;
+      const nextThursday = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() + daysUntilThursday,
+        hoursNumber,
+        minutesNumber,
+        0
+      );
+      return nextThursday.getTime();
+    }
+  }
 
   const startTimer = () => {
     if (!isRunning) {
@@ -53,49 +62,49 @@ export default function App() {
     }
   };
 
-  function msToTime(duration) {
-    let milliseconds = Math.floor((duration % 1000) / 100),
-      seconds = Math.floor((duration / 1000) % 60),
-      minutes = Math.floor((duration / (1000 * 60)) % 60),
-      hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
-
-    hours = hours < 10 ? '0' + hours : hours;
-    minutes = minutes < 10 ? '0' + minutes : minutes;
-    seconds = seconds < 10 ? '0' + seconds : seconds;
-
-    return hours + ':' + minutes + ':' + seconds + '.' + milliseconds;
-  }
-
   function getNextDate() {
-    // const eventsAsMs = [
-    //   mondayEvent().getTime(),
-    //   thursdayEvent().getTime(),
-    //   SaturdayEvent().getTime(),
-    // ];
+    const events = [
+      getEvent(1, 17, 0), // Lundi, 17h, 00m
+      getEvent(4, 2, 37), // Jeudi, 2h, 37m
+      getEvent(6, 14, 54), // Samedi, 14h, 54m
+    ];
 
-    // console.log(eventsAsMs);
+    const start = Math.min(...events);
 
-    // const start = Math.min(...eventsAsMs);
+    setEvent(new Date(start).toLocaleString('fr-Fr'));
 
-    // console.log(start);
+    let now = new Date().getTime();
 
-    const start = mondayEvent();
-
-    console.log(start);
-
-    let now = new Date();
-    if (now > start) {
-      start.setDate(start.getDate() + 1);
-    }
     let remain = (start - now) / 1000;
-    let hh = pad((remain / 60 / 60) % 60);
-    let mm = pad((remain / 60) % 60);
-    let ss = pad(remain % 60);
-    setCountdown(hh + ':' + mm + ':' + ss);
+
+    let dd = pad(Math.floor(remain / (60 * 60 * 24)));
+    let hh = pad(Math.floor((remain / (60 * 60 * 24)) % 24));
+    let mm = pad(Math.floor((remain / 60) % 60));
+    let ss = pad(Math.floor(remain % 60));
+
+    let finalTime = '';
+
+    if (dd >= 1) {
+      finalTime += `${dd} day${dd > 1 ? 's' : ''}, `;
+    }
+
+    if (hh >= 1) {
+      finalTime += `${hh} hour${hh > 1 ? 's' : ''}, `;
+    }
+
+    if (mm >= 1) {
+      finalTime += `${mm} minute${mm > 1 ? 's' : ''}, `;
+    }
+
+    if (ss >= 1) {
+      finalTime += `${ss} second${ss > 1 ? 's' : ''} remaining.`;
+    }
+
+    setCountdown(finalTime);
   }
 
   function pad(num) {
-    return ('' + parseInt(num)).padStart(2, '0');
+    return ('' + num).padStart(2, '0');
   }
 
   useEffect(() => {
@@ -104,6 +113,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
+      <Text>{event}</Text>
       <Text>{countdown}</Text>
       <StatusBar style="auto" />
     </View>
