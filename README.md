@@ -7,5 +7,6 @@ This is a React Native application that gives you the time left until the next e
 Simply run
 
 ```bash
+npm install
 npx expo start
 ```
