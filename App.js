@@ -97,7 +97,7 @@ export default function App() {
     }
 
     if (ss >= 1) {
-      finalTime += `${ss} second${ss > 1 ? 's' : ''} remaining.`;
+      finalTime += `and ${ss} second${ss > 1 ? 's' : ''} remaining.`;
     }
 
     setCountdown(finalTime);
