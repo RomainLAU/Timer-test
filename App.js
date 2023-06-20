@@ -52,6 +52,7 @@ export default function App() {
       timeoutInterval.current = setInterval(() => {
         getNextDate();
       }, 1000);
+      setIsRunning(true);
     }
   };
 
@@ -109,6 +110,10 @@ export default function App() {
 
   useEffect(() => {
     startTimer();
+
+    () => {
+        stopTimer();
+    }
   }, []);
 
   return (
