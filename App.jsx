@@ -79,7 +79,7 @@ export default function App() {
     let remain = (start - now) / 1000;
 
     let dd = pad(Math.floor(remain / (60 * 60 * 24)));
-    let hh = pad(Math.floor((remain / (60 * 60 * 24)) % 24));
+    let hh = pad(Math.floor((remain / (60 * 60)) % 24));
     let mm = pad(Math.floor((remain / 60) % 60));
     let ss = pad(Math.floor(remain % 60));
 
@@ -112,8 +112,8 @@ export default function App() {
     startTimer();
 
     () => {
-        stopTimer();
-    }
+      stopTimer();
+    };
   }, []);
 
   return (
