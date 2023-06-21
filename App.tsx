@@ -1,18 +1,23 @@
 import { StatusBar } from 'expo-status-bar';
+import React from 'react';
 import { useEffect, useRef, useState } from 'react';
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 export default function App() {
-  const [isRunning, setIsRunning] = useState(false);
-  const [countdown, setCountdown] = useState();
-  const [event, setEvent] = useState();
-  const timeoutInterval = useRef(null);
+  const [isRunning, setIsRunning] = useState<boolean>(false);
+  const [countdown, setCountdown] = useState<string>();
+  const [event, setEvent] = useState<string>();
+  const timeoutInterval = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  function getEvent(dayNumber, hoursNumber, minutesNumber) {
+  function getEvent(
+    dayNumber: number,
+    hoursNumber: number,
+    minutesNumber: number
+  ) {
     const now = new Date();
-    const currentDay = now.getDay();
-    const currentHour = now.getHours();
-    const currentMinutes = now.getMinutes();
+    const currentDay: number = now.getDay();
+    const currentHour: number = now.getHours();
+    const currentMinutes: number = now.getMinutes();
 
     if (
       currentDay === dayNumber &&
@@ -28,7 +33,7 @@ export default function App() {
         0
       ).getTime();
     } else {
-      const daysUntilThursday = (7 - currentDay + dayNumber) % 7;
+      const daysUntilThursday: number = (7 - currentDay + dayNumber) % 7;
       const nextThursday = new Date(
         now.getFullYear(),
         now.getMonth(),
@@ -41,7 +46,7 @@ export default function App() {
     }
   }
 
-  const startTimer = () => {
+  const startTimer: () => void = () => {
     if (!isRunning) {
       setIsRunning(true);
       timeoutInterval.current = setInterval(() => {
@@ -56,7 +61,7 @@ export default function App() {
     }
   };
 
-  const stopTimer = () => {
+  const stopTimer: () => void = () => {
     if (isRunning && timeoutInterval.current !== null) {
       setIsRunning(false);
       clearInterval(timeoutInterval.current);
@@ -64,26 +69,26 @@ export default function App() {
   };
 
   function getNextDate() {
-    const events = [
+    const events: number[] = [
       getEvent(1, 17, 0), // Lundi, 17h, 00m
       getEvent(4, 2, 37), // Jeudi, 2h, 37m
       getEvent(6, 14, 54), // Samedi, 14h, 54m
     ];
 
-    const start = Math.min(...events);
+    const start: number = Math.min(...events);
 
     setEvent(new Date(start).toLocaleString('fr-Fr'));
 
-    let now = new Date().getTime();
+    let now: number = new Date().getTime();
 
-    let remain = (start - now) / 1000;
+    let remain: number = (start - now) / 1000;
 
-    let dd = pad(Math.floor(remain / (60 * 60 * 24)));
-    let hh = pad(Math.floor((remain / (60 * 60)) % 24));
-    let mm = pad(Math.floor((remain / 60) % 60));
-    let ss = pad(Math.floor(remain % 60));
+    let dd: number = pad(Math.floor(remain / (60 * 60 * 24)));
+    let hh: number = pad(Math.floor((remain / (60 * 60)) % 24));
+    let mm: number = pad(Math.floor((remain / 60) % 60));
+    let ss: number = pad(Math.floor(remain % 60));
 
-    let finalTime = '';
+    let finalTime: string = '';
 
     if (dd >= 1) {
       finalTime += `${dd} day${dd > 1 ? 's' : ''}, `;
@@ -104,8 +109,8 @@ export default function App() {
     setCountdown(finalTime);
   }
 
-  function pad(num) {
-    return ('' + num).padStart(2, '0');
+  function pad(num: number) {
+    return parseInt(('' + num).padStart(2, '0'));
   }
 
   useEffect(() => {
