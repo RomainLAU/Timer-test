@@ -1,18 +1,20 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import useTimeToString from '../hooks/useTimeToString';
-import useGetEvent from '../hooks/useGetEvent';
+import useGetEvent, { EventType } from '../hooks/useGetEvent';
 
 export default function Timer() {
   const [countdown, setCountdown] = useState<string>();
   const [event, setEvent] = useState<string>();
 
+  const eventDetails: EventType[] = [
+    { dayNumber: 1, hoursNumber: 17, minutesNumber: 0 }, // Lundi, 17h, 00m
+    { dayNumber: 4, hoursNumber: 2, minutesNumber: 37 }, // Jeudi, 2h, 37m
+    { dayNumber: 6, hoursNumber: 14, minutesNumber: 54 }, // Samedi, 14h, 54m
+  ];
+
   const getNextDate = () => {
-    const events: number[] = [
-      useGetEvent({ dayNumber: 1, hoursNumber: 17, minutesNumber: 0 }), // Lundi, 17h, 00m
-      useGetEvent({ dayNumber: 4, hoursNumber: 2, minutesNumber: 37 }), // Jeudi, 2h, 37m
-      useGetEvent({ dayNumber: 6, hoursNumber: 14, minutesNumber: 54 }), // Samedi, 14h, 54m
-    ];
+    const events: number[] = eventDetails.map((event) => useGetEvent(event));
 
     const start: number = Math.min(...events);
 

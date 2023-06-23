@@ -1,4 +1,4 @@
-interface EventType {
+export interface EventType {
   dayNumber: number;
   hoursNumber: number;
   minutesNumber: number;
